@@ -13,10 +13,18 @@ fn magical_stack_leak<T: 'static, F: FnOnce(&'static T) -> R, R>(protection_type
     match protection_type {
         ProtectionType::Quiet => loop { std::thread::park() }
         ProtectionType::Loud => {
-            eprintln!("Unexpected return of stack-leaked data. Exploding to preven dangling &'static"); 
+            emergency_print("Unexpected return of stack-leaked data. Exploding to prevent a  dangling &'static.\nGoodbye.");
             std::process::abort()
         }
     }
+}
+
+// Print a static error message to stderr.
+// Safety: GUARANTEED to never panic, unsafe code may rely on this.
+fn emergency_print(message: &'static str) {
+    // If *logging the error* fails, \0/
+    // Safety: catch_unwind seems to indicate droping the panic payload could, itself panic. So don't drop the payload.
+    std::mem::forget(std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| eprintln!("{}", message)))); 
 }
 
 fn main() {
