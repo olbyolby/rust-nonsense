@@ -7,7 +7,7 @@ enum ProtectionType {
 fn magical_stack_leak<T: 'static, F: FnOnce(&'static T) -> R, R>(protection_type: ProtectionType, data: T, callback: F) -> ! {
     // Safety: Safe becasue `data` will never be dropped or invalidated
     let data: &'static T = unsafe { std::mem::transmute(&data) };
-    let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| callback(data)));
+    std::mem::forget(std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| callback(data)))); // See emergency_print
     
     // Prevent data being dropped/invalidated. park(), abort(), and emergency_print() are all guarnteeds to never panic.
     match protection_type {
@@ -39,7 +39,7 @@ fn main() {
 
         let data2 = data; // So the reference can be moved
         thread::spawn(move || {
-            for i in 0..30 {
+            for _ in 0..30 {
                 println!("The data is: {}", data2);
                 std::thread::sleep(std::time::Duration::from_secs(1))
             }
