@@ -9,7 +9,7 @@ fn magical_stack_leak<T: 'static, F: FnOnce(&'static T) -> R, R>(protection_type
     let data: &'static T = unsafe { std::mem::transmute(&data) };
     let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| callback(data)));
     
-    // Prevent data being dropped/invalidated
+    // Prevent data being dropped/invalidated. park(), abort(), and emergency_print() are all guarnteeds to never panic.
     match protection_type {
         ProtectionType::Quiet => loop { std::thread::park() }
         ProtectionType::Loud => {
