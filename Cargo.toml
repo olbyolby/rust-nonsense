@@ -1,0 +1,12 @@
+[package]
+name = "rust-nonsense"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bytemuck = "1.25.2"
+indexmap = "2.14.2"
+libc = "0.2.191"
+thiserror = "2.0.21"
+userfaultfd = {version="0.9.0", features=["linux5_13","linux5_7","linux4_14"]}
+userfaultfd-sys = "0.6.0"
