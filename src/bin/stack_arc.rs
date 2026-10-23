@@ -4,6 +4,7 @@ use std::{collections::HashMap, ops::Deref, pin::Pin, ptr::NonNull, sync::{Mutex
 
 use indexmap::IndexSet;
 
+
 fn main() {
     let data: StackArcInner<Mutex<HashMap<u128, Option<CollatzCycle>>>> = StackArcInner::new(Mutex::new(HashMap::new()));
 
